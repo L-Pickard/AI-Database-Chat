@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shiner Chat</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: "Consolas", "Arial", sans-serif;
+            background-color: #f0f0f0;
+        }
+        .sidebar {
+            height: 100%;
+            width: 60px;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: #0D1B2A;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .sidebar a {
+            padding: 10px 8px;
+            text-decoration: none;
+            font-size: 22px;
+            color: white;
+            display: block;
+        }
+        .sidebar a:hover {
+            color: #ffd700;
+        }
+        .chat-window {
+            width: calc(100% - 60px);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            right: 0;
+            background-color: #DDDDDD;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-header {
+            min-height: 60px; /* Adjusted to match the sidebar width */
+            background-color: #0D1B2A;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 0 2px;
+        }
+        .chat-header > *:not(:last-child) {
+            margin-right: 20px;
+        }
+        .chat-header img.logo {
+                width: 60px;
+                margin-right: 15px;
+            }
+        .chat-title {
+            color: white;
+            font-weight: 500;
+        }
+        .chat-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        .chat-footer {
+            height: 50px;
+            padding-left: 1px;
+            padding-right: 15px;
+            padding-bottom: 10px;
+            padding-top: 10px;
+            background-color: #0D1B2A;
+            display: flex;
+            justify-content: space-between;
+        }
+        .chat-input {
+            width: calc(100% - 110px);
+            padding: 10px;
+            border: 1px solid #0033CC;
+            border-radius: 5px;
+            margin-right: 10px;
+            font-family: "Consolas", "Arial", sans-serif;
+        }
+        .send-button {
+            padding: 10px 20px;
+            background-color: #0033CC;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: "Consolas", "Arial", sans-serif;
+        }
+        .send-button:disabled {
+            background-color: grey;
+            color: black;
+            cursor: not-allowed;
+        }
+        .userText, .botText {
+            display: flex;
+            margin-bottom: 20px;
+            line-height: 24px;
+        }
+        .botText {
+            justify-content: flex-start;
+        }
+        .userText {
+            justify-content: flex-end;
+        }
+        .userText span, .botText span {
+            display: inline-block;
+            padding: 10px;
+            border-radius: 20px;
+        }
+        .userText span {
+            background-color: #0033CC;
+            color: white;
+        }
+        .botText span {
+            background-color: #C0E6F5;
+            color: black;
+        }
+        .botMessageContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .botCaption {
+            display: block;
+            font-size: 0.75rem;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        .typing-indicator {
+            display: none; /* Initially hidden */
+            margin-top: 5px;
+            align-items: center;
+            color: #0D1B2A;
+        }
+        
+        .typing-indicator-text, .typing-indicator i {
+            font-size: 0.75rem; /* Match the botCaption font size */
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <a href="{{ url_for('info') }}"><i class="fa-solid fa-circle-info fa-lg"></i></a>
+        <a href="{{ url_for('home') }}"><i class="fa-solid fa-database fa-lg"></i></a>
+        <a href="{{ url_for('faq') }}"><i class="fa-solid fa-circle-question fa-lg"></i></a>
+    </div>
+    <div class="chat-window">
+        <div class="chat-header">
+            <img src="static/logo.png" alt="Chatbot Logo" class="logo" />
+            <div class="chat-title">Shiner SQL Database Chat</div>
+            <div>
+                <i class="fa-solid fa-database fa-xl" style="color: #FFFFFF;"></i>
+            </div>
+        </div>
+        <div class="chat-body" id="chatbox">
+            <div class="botMessageContainer">
+                <span class="botCaption">Shiner Database Chatbot</span>
+                <p class="botText"><span>Welcome to Shiner SQL database chat! Do you have a question to ask the database?</span></p>
+            </div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" id="textInput" class="chat-input" placeholder="Type your question to the SQL database here..." />
+            <button class="send-button" onclick="getBotResponse()">Send</button>
+        </div>
+    </div>
+    <script>
+        function getBotResponse() {
+            var rawText = $("#textInput").val();
+            if (!rawText.trim()) return; // Prevent sending empty messages
+    
+            var userHtml = '<p class="userText"><span>' + rawText + '</span></p>';
+            $("#textInput").val(""); // Clear the text input box
+    
+            $(userHtml).appendTo("#chatbox");
+    
+            // Add typing indicator directly after the last message
+            var typingIndicatorHtml = '<div id="typingIndicator" class="typing-indicator"><span class="typing-indicator-text">Shiner Database Chatbot is Typing  </span><i class="fa-solid fa-ellipsis fa-bounce fa-lg"></i></div>';
+            $(typingIndicatorHtml).appendTo("#chatbox");
+            $("#typingIndicator").show();
+    
+            // Disable send button
+            $(".send-button").prop('disabled', true);
+    
+            // Make AJAX call to Flask backend
+            $.get("/get", { msg: rawText }).done(function(data) {
+                // Process and display the response with the bot caption
+                var botHtml = '<div class="botMessageContainer"><span class="botCaption">Shiner Database Chatbot</span><p class="botText"><span>' + data + '</span></p></div>';
+                $("#typingIndicator").before(botHtml); // Place bot response before the typing indicator
+                $("#typingIndicator").remove(); // Remove the typing indicator
+                $(".send-button").prop('disabled', false); // Re-enable send button
+                $("#chatbox").scrollTop($("#chatbox")[0].scrollHeight); // Scroll to the bottom
+            });
+        }
+        
+        $("#textInput").keypress(function(e) {
+            if (e.which === 13) { // Enter key pressed
+                if (!$(".send-button").prop('disabled')) { // Check if the send button is not disabled
+                    getBotResponse();
+                }
+                e.preventDefault(); // Prevent default action
+            }
+        });
+    </script>      
+</body>
+</html>

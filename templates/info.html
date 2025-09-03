@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shiner Chat - Information</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/styles/default.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: "Consolas", "Arial", sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-footer {
+            min-height: 20px;
+            padding: 10px 20px;
+            background-color: #0D1B2A;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed; /* Make footer always visible */
+            bottom: 0;
+            left: 60px; /* Adjust for sidebar */
+            right: 0; /* Ensure footer spans the width */
+            z-index: 2; /* Ensure it's above other content */
+        }
+        /* Sidebar Styles */
+        .sidebar {
+            height: 100%;
+            width: 60px;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: #0D1B2A;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .sidebar a {
+            padding: 10px 8px;
+            text-decoration: none;
+            font-size: 22px;
+            color: white;
+            display: block;
+        }
+        
+        .sidebar a:hover {
+            color: #ffd700;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            margin-left: 60px; /* Offset for sidebar */
+            height: calc(100vh - 20px); /* Full height minus footer height */
+            overflow: hidden; /* Prevents scrolling on main-content */
+        }
+        .chat-header {
+            min-height: 60px; /* Adjusted to match the sidebar width */
+            background-color: #0D1B2A;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 0 2px;
+        }
+        .chat-header > *:not(:last-child) {
+            margin-right: 20px;
+        }
+        .chat-header img.logo {
+                width: 60px;
+                margin-right: 15px;
+            }
+        .chat-title {
+            color: white;
+            font-weight: 500;
+        }
+
+        /* Chat Window Styles */
+        .chat-window {
+            overflow-y: auto;
+            background-color: #DDDDDD;
+            flex-grow: 1;
+            padding: 20px;
+            margin-bottom: 20px; /* Space for footer */
+        }
+
+        .centered-content {
+            background-color: #ffffff; /* White background */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Soft shadow for depth */
+            border-radius: 8px; /* Rounded corners for a modern look */
+            padding: 20px;
+            margin-top: 20px; /* Increased gap between the header and the content */
+            margin-bottom: 20px; /* Space between text content and SQL box */
+            max-width: 800px; /* Max width for better readability */
+            margin-left: auto; /* Centering the content box horizontally */
+            margin-right: auto; /* Centering the content box horizontally */
+            text-align: center;
+        }
+
+        .centered-content p {
+            margin-bottom: 1em; /* Adjust the space below each paragraph */
+        }
+        
+        
+        h1, p {
+            margin-bottom: 20px;
+        }
+
+        .sql-content {
+            display: flex;
+            justify-content: center; /* Center the child horizontally */
+            background-color: #282c34; /* Dark background for SQL content */
+            color: #abb2bf; /* Light text color for readability */
+            padding: 20px;
+            border-radius: 8px; /* Consistent with .centered-content styling */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Consistent shadow for depth */
+            margin: 0 auto 20px auto; /* Center the SQL content box and add margin at the bottom */
+            max-width: 800px; /* Consistent width with .centered-content */
+            overflow-x: auto; /* Allow horizontal scrolling for long SQL content */
+            text-align: left; /* Align SQL content to the left */
+        }
+        
+        pre {
+            width: fit-content; /* Make pre element only as wide as its content */
+            min-width: 100%; /* Ensure it's at least as wide as its container for smaller content */
+            margin: 0; /* Remove default margin */
+            white-space: pre-wrap; /* Keep indentations and line breaks */
+        }
+        
+
+        ul {
+            list-style: none;
+            padding: 0;
+            text-align: left; /* Align list items to the left */
+        }
+
+        ul li {
+            background-color: #e8e8e8;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* Monokai Theme Colors for Highlight.js */
+        .hljs { background: #282c34; color: #abb2bf; }
+        .hljs-keyword { color: #c678dd; }
+        .hljs-literal { color: #56b6c2; }
+        .hljs-string, .hljs-value { color: #98c379; }
+        .hljs-symbol, .hljs-bullet { color: #d19a66; }
+        .hljs-attribute { color: #e6c07b; }
+        .hljs-built_in, .hljs-builtin-name { color: #e6c07b; }
+        .hljs-addition { color: #98c379; }
+        .hljs-variable { color: #d19a66; }
+        .hljs-template-tag, .hljs-template-variable { color: #c678dd; }
+        .hljs-type { color: #e6c07b; }
+        .hljs-selector-class { color: #d19a66; }
+        .hljs-selector-attr { color: #c678dd; }
+        .hljs-selector-pseudo { color: #56b6c2; }
+        .hljs-number { color: #d19a66; }
+        
+        /* Additional styling for the code block */
+        pre code.hljs { padding: 1em; overflow: auto; border-radius: 8px; }
+        pre { overflow: auto; }        
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <a href="{{ url_for('info') }}"><i class="fa-solid fa-circle-info fa-lg"></i></a>
+        <a href="{{ url_for('home') }}"><i class="fa-solid fa-database fa-lg"></i></a>
+        <a href="{{ url_for('faq') }}"><i class="fa-solid fa-circle-question fa-lg"></i></a>
+    </div>
+    <div class="main-content">
+        <div class="chat-header">
+            <img src="static/logo.png" alt="Chatbot Logo" class="logo">
+            <div class="chat-title">Shiner SQL Database Chat</div>
+            <div>
+                <i class="fa-solid fa-database fa-xl" style="color: #FFFFFF;"></i>
+            </div>
+        </div>
+        <div class="chat-window">
+            <div class="centered-content">
+                <h1>Shiner SQL Database Chat 🛹</h1>
+                <p>Hi there, colleague! 👋 This chatbot app lets you ask questions against a sqlite3 database. This app will generate a SQL query for your question, execute it against the database, and finally give you the answer in natural language.</p>
+                
+                <p>If you wish to extract data in a CSV format so you can easily use it in Excel, make sure to start your question with the prefix DATAEXPORT: and ask for the data in CSV format. Otherwise, the answer you receive will be in a format optimal for reading.</p>
+                
+                <p>The app has memory of your chat history during that session which should help with follow-up questions.</p>
+                
+                <p>To get the most out of the app, it can be helpful to know the schema which I have listed below.</p>
+            </div>
+            
+            <!-- Separate SQL content box -->
+            <div class="sql-content">
+                <pre><code class="language-sql">{{ sql_content }}</code></pre>
+            </div>
+        </div>
+        <div class="chat-footer">
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+    </script>    
+</body>
+</html>

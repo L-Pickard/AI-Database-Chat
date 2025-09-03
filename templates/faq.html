@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shiner Chat - Questions</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/styles/default.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: "Consolas", "Arial", sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-footer {
+            min-height: 20px;
+            padding: 10px 20px;
+            background-color: #0D1B2A;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed; /* Make footer always visible */
+            bottom: 0;
+            left: 60px; /* Adjust for sidebar */
+            right: 0; /* Ensure footer spans the width */
+            z-index: 2; /* Ensure it's above other content */
+        }
+        /* Sidebar Styles */
+        .sidebar {
+            height: 100%;
+            width: 60px;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: #0D1B2A;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .sidebar a {
+            padding: 10px 8px;
+            text-decoration: none;
+            font-size: 22px;
+            color: white;
+            display: block;
+        }
+        
+        .sidebar a:hover {
+            color: #ffd700;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            margin-left: 60px; /* Offset for sidebar */
+            height: calc(100vh - 20px); /* Full height minus footer height */
+            overflow: hidden; /* Prevents scrolling on main-content */
+        }
+        .chat-header {
+            min-height: 60px; /* Adjusted to match the sidebar width */
+            background-color: #0D1B2A;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 0 2px;
+        }
+        .chat-header > *:not(:last-child) {
+            margin-right: 20px;
+        }
+        .chat-header img.logo {
+                width: 60px;
+                margin-right: 15px;
+            }
+        .chat-title {
+            color: white;
+            font-weight: 500;
+        }
+
+        /* Chat Window Styles */
+        .chat-window {
+            overflow-y: auto;
+            background-color: #DDDDDD;
+            flex-grow: 1;
+            padding: 20px;
+            margin-bottom: 20px; /* Space for footer */
+        }
+
+        .centered-content {
+            background-color: #ffffff; /* White background */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Soft shadow for depth */
+            border-radius: 8px; /* Rounded corners for a modern look */
+            padding: 20px;
+            margin-bottom: 20px; /* Space between content and list */
+            margin-top: 20px; /* Increased gap between the header and the content */
+            max-width: 800px; /* Max width for better readability */
+            margin-left: auto; /* Centering the content box horizontally */
+            margin-right: auto; /* Centering the content box horizontally */
+            text-align: center;
+        }
+        
+        h1, p {
+            margin-bottom: 20px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            text-align: left; /* Align list items to the left */
+        }
+
+        ul li {
+            background-color: #e8e8e8;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <a href="{{ url_for('info') }}"><i class="fa-solid fa-circle-info fa-lg"></i></a>
+        <a href="{{ url_for('home') }}"><i class="fa-solid fa-database fa-lg"></i></a>
+        <a href="{{ url_for('faq') }}"><i class="fa-solid fa-circle-question fa-lg"></i></a>
+    </div>
+    <div class="main-content">
+        <div class="chat-header">
+            <img src="static/logo.png" alt="Chatbot Logo" class="logo">
+            <div class="chat-title">Shiner SQL Database Chat</div>
+            <div>
+                <i class="fa-solid fa-database fa-xl" style="color: #FFFFFF;"></i>
+            </div>
+        </div>
+        <div class="chat-window">
+            <div class="centered-content">
+                <h1>Example Questions 🔍</h1>
+                <p>
+                   I have provided the app with a range of example questions that might be asked of it. For each question, I have written a valid SQL query to
+                   pair it with. These examples help guide the LLM to construct better SQL queries. See below for the list of questions.
+                </p>
+                <ul>
+                    {% for input_element in input_elements %}
+                    <li style="margin-bottom: 10px;">{{ input_element }}</li>
+                    {% endfor %}
+                </ul>            
+            </div>
+        </div>
+        <div class="chat-footer">
+        </div>
+    </div>
+</body>
+</html>
